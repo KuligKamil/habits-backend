@@ -3,27 +3,52 @@
 # live syntax, and validation errors highlighted within the text.
 
 # We'll get you started with a simple query showing your username!
-query {
-  viewer {
-    login
-     repositories {
-          totalCount
-        }
-    followers(first:10) {
-      totalCount
-      nodes {
-        login
-        avatarUrl
-        repositories {
-          totalCount
-        }
-        followers(first: 10) {
-          totalCount
-        }
-      }
-    } 
+fragment userFields on User {
+  login
+  avatarUrl
+  repositories {
+    totalCount
+  }
+  contributionsCollection(from: "2023-05-01T01:01:00", to: "2023-05-30T01:01:00") {
+    contributionCalendar {
+      totalContributions
+    }
   }
 }
+
+{
+  viewer {
+    ...userFields
+    followers(first: 15) {
+      totalCount
+      nodes {
+        ...userFields
+        followers(first: 30) {
+          totalCount
+        }
+        # contributionsCollection {
+        #   contributionCalendar {
+        #     totalContributions
+        #     months {
+        #       name
+        #       totalWeeks
+        #       year
+        #       firstDay
+        #     }
+        #     weeks {
+        #       contributionDays {
+        #         contributionCount
+        #         date
+        #         weekday
+        #       }
+        #     }
+        #   }
+        # }
+      }
+    }
+  }
+}
+fragment userFields on 
 # query { 
 #   sinem: user( login: "brzezinskimarcin" ) {
 #     repositories(first: 3, isFork: false, orderBy: {field: PUSHED_AT direction: DESC}) {
