@@ -1,0 +1,64 @@
+query Pandas($from: DateTime, $to: DateTime, $fans: Int) {
+  rateLimit {
+    limit
+    cost
+    remaining
+    resetAt
+    used
+    nodeCount
+  }
+  viewer {
+    login
+    followers(first: $fans) {
+      totalCount
+      fans: nodes {
+        ...userFields
+        followers(first: $fans) {
+          totalCount
+        }
+      }
+    }
+  }
+  kamil: user(login: "KuligKamil") {
+    ...userFields
+  }
+  sinem: user(login: "sinem-ay") {
+    ...userFields
+  }
+}
+
+fragment userFields on User {
+  login
+  avatarUrl
+  repositories {
+    totalCount
+  }
+  url
+  contributionsCollection(from: $from, to: $to) {
+    contributionCalendar {
+      totalContributions
+    }
+  }
+  starredRepositories(
+    orderBy: {field: STARRED_AT, direction: ASC}
+    ownedByViewer: false
+  ) {
+    totalCount
+    edges {
+      node {
+        createdAt
+        name
+        url
+        stargazerCount
+        repositoryTopics(first: 100) {
+          topics: nodes {
+            topic {
+              name
+            }
+          }
+        }
+      }
+      starredAt
+    }
+  }
+}
